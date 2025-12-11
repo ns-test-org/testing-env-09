@@ -66,6 +66,7 @@ export default function PacManGame() {
   const [ghosts, setGhosts] = useState<Ghost[]>(INITIAL_GHOSTS);
   const [powerUpActive, setPowerUpActive] = useState(false);
   const [level, setLevel] = useState(1);
+  const [isLightTheme, setIsLightTheme] = useState(false);
   const powerUpTimerRef = useRef<NodeJS.Timeout | null>(null);
 
   const isValidMove = useCallback((pos: Position) => {
@@ -283,7 +284,9 @@ export default function PacManGame() {
   };
 
   return (
-    <div className="relative h-[100dvh] w-full overflow-hidden bg-black text-white flex items-center justify-center">
+    <div className={`relative h-[100dvh] w-full overflow-hidden flex items-center justify-center transition-colors ${
+      isLightTheme ? 'bg-gray-100 text-gray-900' : 'bg-black text-white'
+    }`}>
       <div className="flex flex-col items-center gap-6">
         <div className="flex items-center justify-between w-full max-w-[400px] px-4">
           <div className="flex gap-4 items-center">
@@ -298,20 +301,34 @@ export default function PacManGame() {
               ))}
             </div>
           </div>
-          <button
-            onClick={resetGame}
-            className="px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-lg font-semibold transition-colors"
-          >
-            Reset
-          </button>
+          <div className="flex gap-2">
+            <button
+              onClick={() => setIsLightTheme(!isLightTheme)}
+              className={`px-4 py-2 rounded-lg font-semibold transition-colors ${
+                isLightTheme 
+                  ? 'bg-gray-800 hover:bg-gray-900 text-white' 
+                  : 'bg-gray-200 hover:bg-gray-300 text-gray-900'
+              }`}
+            >
+              {isLightTheme ? '🌙' : '☀️'}
+            </button>
+            <button
+              onClick={resetGame}
+              className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-semibold transition-colors"
+            >
+              Reset
+            </button>
+          </div>
         </div>
 
         <div 
-          className="relative border-4 border-blue-600 rounded-lg"
+          className={`relative border-4 rounded-lg transition-colors ${
+            isLightTheme ? 'border-blue-400' : 'border-blue-600'
+          }`}
           style={{ 
             width: GRID_SIZE * CELL_SIZE, 
             height: GRID_SIZE * CELL_SIZE,
-            backgroundColor: '#000'
+            backgroundColor: isLightTheme ? '#f3f4f6' : '#000'
           }}
         >
           {MAZE.map((row, y) =>
@@ -324,7 +341,11 @@ export default function PacManGame() {
                   top: y * CELL_SIZE,
                   width: CELL_SIZE,
                   height: CELL_SIZE,
-                  backgroundColor: cell === 1 ? '#1e40af' : cell === 4 ? '#2563eb' : 'transparent',
+                  backgroundColor: cell === 1 
+                    ? (isLightTheme ? '#60a5fa' : '#1e40af') 
+                    : cell === 4 
+                    ? (isLightTheme ? '#93c5fd' : '#2563eb') 
+                    : 'transparent',
                 }}
               >
                 {dots[y][x] && cell === 2 && (
@@ -422,19 +443,27 @@ export default function PacManGame() {
           />
         </div>
 
-        <div className="text-center text-sm text-gray-400">
+        <div className={`text-center text-sm ${
+          isLightTheme ? 'text-gray-600' : 'text-gray-400'
+        }`}>
           Use Arrow Keys or WASD to move • Eat power pellets to chase ghosts!
         </div>
 
         {gameOver && (
-          <div className="absolute inset-0 bg-black/80 flex items-center justify-center">
-            <div className="bg-gray-900 p-8 rounded-lg text-center border-4 border-red-600">
+          <div className={`absolute inset-0 flex items-center justify-center ${
+            isLightTheme ? 'bg-white/90' : 'bg-black/80'
+          }`}>
+            <div className={`p-8 rounded-lg text-center border-4 border-red-600 ${
+              isLightTheme ? 'bg-white' : 'bg-gray-900'
+            }`}>
               <h2 className="text-4xl font-bold mb-4 text-red-400">Game Over!</h2>
               <p className="text-2xl mb-2">Final Score: {score}</p>
-              <p className="text-xl mb-6 text-gray-400">Level Reached: {level}</p>
+              <p className={`text-xl mb-6 ${
+                isLightTheme ? 'text-gray-600' : 'text-gray-400'
+              }`}>Level Reached: {level}</p>
               <button
                 onClick={resetGame}
-                className="px-6 py-3 bg-blue-600 hover:bg-blue-700 rounded-lg font-semibold transition-colors"
+                className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-semibold transition-colors"
               >
                 Play Again
               </button>
@@ -445,6 +474,7 @@ export default function PacManGame() {
     </div>
   );
 }
+
 
 
 
